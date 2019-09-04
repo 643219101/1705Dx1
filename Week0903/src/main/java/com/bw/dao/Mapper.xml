@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- mybatis 映射文件  mapper 是根标签 -->
+   <mapper namespace="com.bw.dao.Dao">
+  <select id="list" resultType="map">
+ SELECT  w_dianying.id,name,juqing,daoyan,times,GROUP_CONCAT(dname) as dname from w_dianying LEFT JOIN w_mid on w_dianying.id=w_mid.id 
+LEFT JOIN w_fenlei on  w_mid.did = w_fenlei.did 
+   <where>
+             <if test="name!=null and name!=''">
+              name like concat ('%',#{name},'%')
+             </if>
+  </where>
+
+GROUP BY w_dianying.id
+  </select>
+        
+        <select id="duoxuan" resultType="com.bw.entity.Fenlei">
+        select * from w_fenlei;
+        
+        </select>
+        
+      <insert id="add" useGeneratedKeys="true">
+         INSERT INTO `w_dianying` (`name`, `juqing`, `daoyan`, `times`) VALUES (#{name}, #{juqing},#{daoyan},#{times});
+          <selectKey keyProperty="id" resultType="int">
+             SELECT LAST_INSERT_ID()
+          </selectKey>
+      </insert>  
+        <insert id="addmid">
+           insert into w_mid  values <foreach collection="did" item="did" separator=",">
+               (#{id},#{did})
+           </foreach>
+        
+        </insert>
+        
+        <select id="show" resultType="map">
+           SELECT  w_dianying.id,name,juqing,daoyan,times,GROUP_CONCAT(w_fenlei.did) as did from w_dianying LEFT JOIN w_mid on w_dianying.id=w_mid.id 
+LEFT JOIN w_fenlei on  w_mid.did = w_fenlei.did  where w_dianying.id=#{id}
+        </select>
+        
+        <delete id="delmid">
+          delete from w_mid where id=#{id};
+        </delete>
+        
+        <update id="update">
+           UPDATE `w_dianying` SET `name`=#{name}, `juqing`=#{juqing}, `daoyan`=#{daoyan}, `times`=#{times} WHERE (`id`=#{id})
+           
+        </update>
+        <delete id="dels">
+         delete from w_mid where id=#{id}
+        </delete>
+        <delete id="delss">
+         delete from w_mid where id=#{id}
+        </delete>
+   </mapper>
